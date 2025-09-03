@@ -6,24 +6,14 @@ const getParamEventId = urlParams.get("event_id") ? urlParams.get("event_id") : 
 const getParamManagerName = urlParams.get("manager_name") ? urlParams.get("manager_name") : null;
 
 // Установка заголовка
-document.getElementById("title").textContent = "Регистрация пользователя на событии " + getParamEventId;
+document.getElementById("event-info").textContent = "Событие: " + getParamEventId;
 
 // Глобальные переменные
 let currentUserId = null;
 let POPUP_SHOWED = false;
 let scanner = null;
 
-// Настройка размеров видео контейнера
-const win = window;
-const doc = document;
-const docElem = doc.documentElement;
-const body = doc.getElementsByTagName('body')[0];
-const x = win.innerWidth || docElem.clientWidth || body.clientWidth;
-const y = win.innerHeight || docElem.clientHeight || body.clientHeight;
-
-const videoContainer = document.getElementById("video-container");
-videoContainer.style.width = x + "px";
-videoContainer.style.height = y + "px";
+// Настройка размеров видео контейнера - теперь управляется через CSS
 
 // Элементы интерфейса
 const popup = document.getElementById("popup");
@@ -114,7 +104,7 @@ yesBtn.addEventListener("click", () => {
     };
 
     // Отправка данных на сервер
-    fetch("/scannerPostData", {
+    fetch("/scan", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

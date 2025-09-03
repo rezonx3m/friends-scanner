@@ -30,6 +30,12 @@ type ScannerResult struct {
 	ManagerName string `json:"manager_name"`
 }
 
+type ResultsPageData struct {
+	EventID    string
+	Results    []ScannerResult
+	TotalCount int
+}
+
 var db *sql.DB
 
 func initDatabase() error {
@@ -69,7 +75,7 @@ func initDatabase() error {
 	return nil
 }
 
-func scannerPostDataHandler(w http.ResponseWriter, r *http.Request) {
+func scanHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -117,7 +123,7 @@ func scannerPostDataHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
-func scannerResultsHandler(w http.ResponseWriter, r *http.Request) {
+func resultsHandler(w http.ResponseWriter, r *http.Request) {
 	eventID := r.URL.Query().Get("event_id")
 	if eventID == "" {
 		eventID = "default"
@@ -150,18 +156,181 @@ func scannerResultsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// HTML шаблон для таблицы
 	tmpl := `
-	<table style='border-collapse: collapse; border:1px solid #69899F;'>
-		<tr>
-			<th>Дата</th><th>Пользователь</th><th>Добавляющий менеджер</th>
-		</tr>
-		{{range .}}
-		<tr>
-			<td style='border:1px dotted #000000; padding:5px;'>{{.Date}}</td>
-			<td style='border:1px dotted #000000; padding:5px;'>{{.UserID}}</td>
-			<td style='border:1px dotted #000000; padding:5px;'>{{.ManagerName}}</td>
-		</tr>
-		{{end}}
-	</table>`
+	<!DOCTYPE html>
+	<html lang="ru">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Результаты сканирования - {{.EventID}}</title>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+		<style>
+			* { margin: 0; padding: 0; box-sizing: border-box; }
+			body {
+				font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				min-height: 100vh;
+				padding: 2rem 1rem;
+				color: #333;
+			}
+			.container {
+				max-width: 1200px;
+				margin: 0 auto;
+			}
+			.header {
+				background: rgba(255, 255, 255, 0.95);
+				backdrop-filter: blur(10px);
+				border-radius: 20px;
+				padding: 2rem;
+				margin-bottom: 2rem;
+				text-align: center;
+				box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+			}
+			.header h1 {
+				color: #4c51bf;
+				font-size: 2rem;
+				font-weight: 700;
+				margin-bottom: 0.5rem;
+			}
+			.header p {
+				color: #6b7280;
+				font-size: 1.125rem;
+			}
+			.stats {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+				gap: 1rem;
+				margin-bottom: 2rem;
+			}
+			.stat-card {
+				background: rgba(255, 255, 255, 0.95);
+				backdrop-filter: blur(10px);
+				border-radius: 16px;
+				padding: 1.5rem;
+				text-align: center;
+				box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+			}
+			.stat-number {
+				font-size: 2rem;
+				font-weight: 700;
+				color: #4c51bf;
+				margin-bottom: 0.5rem;
+			}
+			.stat-label {
+				color: #6b7280;
+				font-weight: 500;
+			}
+			.table-container {
+				background: rgba(255, 255, 255, 0.95);
+				backdrop-filter: blur(10px);
+				border-radius: 20px;
+				overflow: hidden;
+				box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+			}
+			.results-table {
+				width: 100%;
+				border-collapse: collapse;
+			}
+			.results-table th {
+				background: linear-gradient(135deg, #4c51bf 0%, #667eea 100%);
+				color: #fff;
+				padding: 1.25rem 1rem;
+				text-align: left;
+				font-weight: 600;
+				font-size: 0.875rem;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+			}
+			.results-table td {
+				padding: 1rem;
+				border-bottom: 1px solid #e5e7eb;
+				font-size: 0.875rem;
+				color: #374151;
+			}
+			.results-table tr:hover {
+				background: rgba(76, 81, 191, 0.05);
+			}
+			.results-table tr:last-child td {
+				border-bottom: none;
+			}
+			.user-id {
+				font-family: 'Monaco', 'Menlo', monospace;
+				background: #f3f4f6;
+				padding: 0.25rem 0.5rem;
+				border-radius: 6px;
+				font-weight: 500;
+			}
+			.manager-name {
+				font-weight: 500;
+				color: #059669;
+			}
+			.date-time {
+				color: #6b7280;
+			}
+			.empty-state {
+				text-align: center;
+				padding: 3rem;
+				color: #6b7280;
+			}
+			.empty-state h3 {
+				font-size: 1.25rem;
+				margin-bottom: 0.5rem;
+			}
+			@media (max-width: 768px) {
+				body { padding: 1rem 0.5rem; }
+				.header { padding: 1.5rem; }
+				.header h1 { font-size: 1.5rem; }
+				.header p { font-size: 1rem; }
+				.results-table th,
+				.results-table td { padding: 0.75rem 0.5rem; font-size: 0.75rem; }
+				.stat-card { padding: 1rem; }
+				.stat-number { font-size: 1.5rem; }
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="header">
+				<h1>Результаты сканирования</h1>
+				<p>Событие: {{.EventID}}</p>
+			</div>
+			
+			<div class="stats">
+				<div class="stat-card">
+					<div class="stat-number">{{.TotalCount}}</div>
+					<div class="stat-label">Всего регистраций</div>
+				</div>
+			</div>
+
+			<div class="table-container">
+				{{if .Results}}
+				<table class="results-table">
+					<thead>
+						<tr>
+							<th>Дата и время</th>
+							<th>ID пользователя</th>
+							<th>Менеджер</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{range .Results}}
+						<tr>
+							<td class="date-time">{{.Date}}</td>
+							<td><span class="user-id">{{.UserID}}</span></td>
+							<td class="manager-name">{{if .ManagerName}}{{.ManagerName}}{{else}}-{{end}}</td>
+						</tr>
+						{{end}}
+					</tbody>
+				</table>
+				{{else}}
+				<div class="empty-state">
+					<h3>Пока нет регистраций</h3>
+					<p>Начните сканировать QR-коды для регистрации участников</p>
+				</div>
+				{{end}}
+			</div>
+		</div>
+	</body>
+	</html>`
 
 	t, err := template.New("results").Parse(tmpl)
 	if err != nil {
@@ -169,8 +338,15 @@ func scannerResultsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Подготавливаем данные для шаблона
+	pageData := ResultsPageData{
+		EventID:    eventID,
+		Results:    results,
+		TotalCount: len(results),
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	err = t.Execute(w, results)
+	err = t.Execute(w, pageData)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -219,8 +395,8 @@ func main() {
 	}
 
 	// Маршруты
-	http.HandleFunc("/scannerPostData", scannerPostDataHandler)
-	http.HandleFunc("/scannerResults", scannerResultsHandler)
+	http.HandleFunc("/scan", scanHandler)
+	http.HandleFunc("/results", resultsHandler)
 	http.HandleFunc("/static/", staticHandler)
 	http.HandleFunc("/", rootHandler)
 
