@@ -3,11 +3,13 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -40,7 +42,7 @@ func initDatabase() error {
 	// Проверяем, существует ли таблица
 	var tableName string
 	err = db.QueryRow("SELECT name FROM sqlite_master WHERE type='table' AND name='friends_scanner';").Scan(&tableName)
-	
+
 	if err == sql.ErrNoRows {
 		// Таблица не существует, создаем её
 		createTableSQL := `
@@ -52,7 +54,7 @@ func initDatabase() error {
 			add_time DATETIME DEFAULT CURRENT_TIMESTAMP,
 			UNIQUE(event_id, user_id)
 		);`
-		
+
 		_, err = db.Exec(createTableSQL)
 		if err != nil {
 			return fmt.Errorf("ошибка создания таблицы: %v", err)
@@ -176,15 +178,35 @@ func scannerResultsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func staticHandler(w http.ResponseWriter, r *http.Request) {
-	// Обслуживание статических файлов
+	// Обслуживание статических файлов из папки /static/
 	path := r.URL.Path
-	if path == "/" {
+	// Убираем префикс /static из пути
+	path = strings.TrimPrefix(path, "/static")
+	// Если путь пустой или это корень static, отдаем index.html
+	if path == "/" || path == "" {
 		path = "/index.html"
 	}
-	http.ServeFile(w, r, "./static"+path)
+
+	// Проверяем, существует ли файл
+	filePath := "./static" + path
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		http.NotFound(w, r)
+		return
+	}
+
+	http.ServeFile(w, r, filePath)
+}
+
+func rootHandler(w http.ResponseWriter, r *http.Request) {
+	// Обслуживание корневого пути - отдаем index.html
+	http.ServeFile(w, r, "./static/index.html")
 }
 
 func main() {
+	// Парсинг флагов командной строки
+	port := flag.String("port", "8080", "Порт для запуска сервера")
+	flag.Parse()
+
 	// Инициализация базы данных
 	if err := initDatabase(); err != nil {
 		log.Fatal("Ошибка инициализации базы данных:", err)
@@ -200,8 +222,8 @@ func main() {
 	http.HandleFunc("/scannerPostData", scannerPostDataHandler)
 	http.HandleFunc("/scannerResults", scannerResultsHandler)
 	http.HandleFunc("/static/", staticHandler)
-	http.HandleFunc("/", staticHandler)
+	http.HandleFunc("/", rootHandler)
 
-	log.Println("Сервер запущен на http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Printf("Сервер запущен на http://localhost:%s", *port)
+	log.Fatal(http.ListenAndServe(":"+*port, nil))
 }
