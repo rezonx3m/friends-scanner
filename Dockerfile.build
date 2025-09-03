@@ -1,0 +1,34 @@
+# Dockerfile только для сборки Linux бинарника
+FROM golang:1.21-bullseye AS builder
+
+# Устанавливаем необходимые пакеты для сборки
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libc6-dev \
+    libsqlite3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Устанавливаем рабочую директорию
+WORKDIR /app
+
+# Копируем go mod файлы
+COPY go.mod go.sum ./
+
+# Загружаем зависимости
+RUN go mod download
+
+# Копируем исходный код
+COPY main.go ./
+
+# Собираем приложение для Linux (текущая архитектура контейнера)
+RUN CGO_ENABLED=1 go build -ldflags="-s -w" -o friends-scanner-linux .
+
+# Создаем папку для артефактов
+RUN mkdir -p /artifacts
+
+# Копируем собранный бинарник в папку артефактов
+RUN cp friends-scanner-linux /artifacts/
+
+# Финальная стадия - просто копируем артефакты
+FROM scratch AS artifacts
+COPY --from=builder /artifacts/ /
