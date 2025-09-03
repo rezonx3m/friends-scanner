@@ -1,5 +1,5 @@
 # Dockerfile только для сборки Linux бинарника
-FROM golang:1.21-bullseye AS builder
+FROM --platform=linux/amd64 golang:1.21-bullseye AS builder
 
 # Устанавливаем необходимые пакеты для сборки
 RUN apt-get update && apt-get install -y \
@@ -20,8 +20,8 @@ RUN go mod download
 # Копируем исходный код
 COPY main.go ./
 
-# Собираем приложение для Linux (текущая архитектура контейнера)
-RUN CGO_ENABLED=1 go build -ldflags="-s -w" -o friends-scanner-linux .
+# Собираем приложение для Linux x86_64
+RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o friends-scanner-linux .
 
 # Создаем папку для артефактов
 RUN mkdir -p /artifacts
