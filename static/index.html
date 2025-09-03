@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friends QR Scanner</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+
+<body>
+    <div id="overlay"></div>
+    <div id="video-container">
+        <video id="qr-video"></video>
+    </div>
+    <div id="title"></div>
+
+    <!-- Модальное окно подтверждения -->
+    <div id="popup" class="popup">
+        <div class="popup__content">
+            <h2 id="popup-header" class="popup__title"></h2>
+            <div class="btn-container">
+                <button id="no-btn" class="popup__button">Нет</button>
+                <button id="yes-btn" class="popup__button">Да</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно с одной кнопкой -->
+    <div id="popup-one-button" class="popup">
+        <div class="popup__content">
+            <h2 id="popup-one-button-header" class="popup__title"></h2>
+            <button id="popup-one-button-btn" class="popup__button"></button>
+        </div>
+    </div>
+
+    <script src="static/qr-scanner.min.js" type="module"></script>
+    <script src="static/crypto-js.min.js"></script>
+    <script src="static/app.js"></script>
+</body>
+</html>
