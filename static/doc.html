@@ -307,85 +307,22 @@
             <nav class="nav">
                 <h3>📋 Содержание</h3>
                 <ul>
-                    <li><a href="#overview">Обзор системы</a></li>
-                    <li><a href="#installation">Установка</a></li>
-                    <li><a href="#usage">Использование</a></li>
-                    <li><a href="#api">API</a></li>
-                    <li><a href="#database">База данных</a></li>
-                    <li><a href="#security">Безопасность</a></li>
-                    <li><a href="#troubleshooting">Решение проблем</a></li>
+                    <li><a href="#usage">Как пользоваться</a></li>
+                    <li><a href="#configurator">Конфигуратор ссылок</a></li>
                 </ul>
             </nav>
 
-            <section id="overview" class="section">
-                <h2>🎯 Обзор системы</h2>
-                <p>
-                    Friends QR Scanner - это веб-приложение для регистрации участников на событиях через сканирование QR-кодов. 
-                    Система состоит из Go-бекенда и веб-интерфейса, работающего в браузере.
-                </p>
+            <section id="usage" class="section">
+                <h2>🚀 Как пользоваться</h2>
 
-                <div class="feature-grid">
-                    <div class="feature-card">
-                        <h4>📷 QR Сканирование</h4>
-                        <p>Использует камеру устройства для сканирования QR-кодов в реальном времени</p>
-                    </div>
-                    <div class="feature-card">
-                        <h4>🔒 Безопасность</h4>
-                        <p>Поддержка защищенного режима с MD5 хешированием для проверки подлинности</p>
-                    </div>
-                    <div class="feature-card">
-                        <h4>📊 Отчеты</h4>
-                        <p>Просмотр результатов регистрации в удобном веб-интерфейсе</p>
-                    </div>
-                    <div class="feature-card">
-                        <h4>🚫 Защита от дублей</h4>
-                        <p>Автоматическое предотвращение повторной регистрации одного пользователя</p>
-                    </div>
-                </div>
-            </section>
-
-            <section id="installation" class="section">
-                <h2>⚙️ Установка и запуск</h2>
-                
-                <h3>Системные требования</h3>
-                <ul>
-                    <li>Go версии 1.21 или выше</li>
-                    <li>Веб-браузер с поддержкой камеры</li>
-                    <li>HTTPS соединение (для доступа к камере)</li>
-                </ul>
-
-                <h3>Пошаговая установка</h3>
-                <ol>
-                    <li>Клонируйте репозиторий или скачайте исходный код</li>
-                    <li>Установите зависимости:</li>
-                </ol>
-
-                <div class="code-block">go mod tidy</div>
-
-                <ol start="3">
-                    <li>Запустите сервер:</li>
-                </ol>
-
-                <div class="code-block">go run main.go</div>
-
-                <p>Или с указанием порта:</p>
-                <div class="code-block">go run main.go -port=8080</div>
-
-                <ol start="4">
-                    <li>Откройте браузер и перейдите по адресу: <span class="inline-code">http://localhost:8080</span></li>
-                </ol>
+                <h3>Формирование ссылки на сканнер</h3>
+                <p>Для создания ссылки на сканнер используйте следующий формат:</p>
+                <div class="code-block" id="scanner-format-example"></div>
 
                 <div class="info">
-                    <h4>💡 Совет</h4>
-                    <p>Для работы с камерой в современных браузерах требуется HTTPS. В продакшене используйте SSL-сертификат.</p>
+                    <h4>⚠️ Обязательные параметры</h4>
+                    <p><strong>event_id</strong> - обязательный параметр для идентификации события</p>
                 </div>
-            </section>
-
-            <section id="usage" class="section">
-                <h2>🚀 Использование</h2>
-
-                <h3>Параметры URL</h3>
-                <p>Система поддерживает настройку через параметры URL:</p>
 
                 <div class="table-container">
                     <table class="params-table">
@@ -393,7 +330,7 @@
                             <tr>
                                 <th>Параметр</th>
                                 <th>Описание</th>
-                                <th>По умолчанию</th>
+                                <th>Обязательный</th>
                                 <th>Пример</th>
                             </tr>
                         </thead>
@@ -401,222 +338,181 @@
                             <tr>
                                 <td><span class="inline-code">event_id</span></td>
                                 <td>Идентификатор события</td>
-                                <td>default</td>
+                                <td>Да</td>
                                 <td>conference2024</td>
                             </tr>
                             <tr>
                                 <td><span class="inline-code">manager_name</span></td>
-                                <td>Имя менеджера</td>
-                                <td>null</td>
-                                <td>John</td>
-                            </tr>
-                            <tr>
-                                <td><span class="inline-code">mode</span></td>
-                                <td>Режим сканирования</td>
-                                <td>default</td>
-                                <td>secure</td>
-                            </tr>
-                            <tr>
-                                <td><span class="inline-code">salt</span></td>
-                                <td>Соль для secure режима</td>
-                                <td>salt</td>
-                                <td>mysecretkey</td>
+                                <td>Имя менеджера, который выполняет первое сканирование</td>
+                                <td>Нет</td>
+                                <td>Иван</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <h4>Пример URL:</h4>
-                <div class="code-block">http://localhost:8080?event_id=conference2024&manager_name=John&mode=secure&salt=mysalt</div>
+                <h4>Примеры ссылок:</h4>
+                <div class="code-block" id="scanner-examples"></div>
 
-                <h3>Режимы сканирования</h3>
+                <h3>Формирование ссылки на результаты</h3>
+                <p>Для просмотра результатов регистрации используйте:</p>
+                <div class="code-block" id="results-format-example"></div>
 
-                <h4>Default режим</h4>
-                <p>Извлекает user_id из QR-кода с URL вида:</p>
-                <div class="code-block">https://example.com/user/user123</div>
+                <h4>Пример:</h4>
+                <div class="code-block" id="results-example"></div>
 
-                <h4>Secure режим</h4>
-                <p>Проверяет подлинность QR-кода через MD5 хеш:</p>
-                <div class="code-block">https://example.com/ab/user123</div>
-                <p>где <span class="inline-code">ab</span> - первые 2 символа MD5(user123 + salt)</p>
-
-                <div class="warning">
-                    <h4>⚠️ Важно</h4>
-                    <p>В secure режиме QR-коды с неверным хешем будут отклонены системой.</p>
-                </div>
             </section>
 
-            <section id="api" class="section">
-                <h2>🔌 API</h2>
+            <section id="configurator" class="section">
+                <h2>🔧 Конфигуратор ссылок</h2>
+                <p>Используйте форму ниже для генерации ссылок на сканнер и результаты:</p>
 
-                <h3>Эндпоинты</h3>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 2rem; margin: 1.5rem 0;">
+                    <h3 style="margin-top: 0; color: #4c51bf;">Настройки</h3>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label for="event-id" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Event ID (обязательно):</label>
+                        <input type="text" id="event-id" placeholder="conference2024" 
+                               style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-family: monospace;">
+                    </div>
 
-                <div class="api-endpoint">
-                    <span class="method post">POST</span>
-                    <strong>/scan</strong>
-                    <p>Регистрирует пользователя на событии</p>
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="manager-name" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Имя менеджера (опционально):</label>
+                        <input type="text" id="manager-name" placeholder="Иван" 
+                               style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-family: monospace;">
+                    </div>
+
+                    <h3 style="color: #4c51bf;">Сгенерированные ссылки</h3>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Ссылка на сканнер:</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="scanner-link" readonly 
+                                   style="flex: 1; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; background: #f9fafb; font-family: monospace; font-size: 0.875rem;">
+                            <button onclick="copyToClipboard('scanner-link')" 
+                                    style="padding: 0.75rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                Копировать
+                            </button>
+                            <button onclick="openLink('scanner-link')" 
+                                    style="padding: 0.75rem 1rem; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                Открыть
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Ссылка на результаты:</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="results-link" readonly 
+                                   style="flex: 1; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; background: #f9fafb; font-family: monospace; font-size: 0.875rem;">
+                            <button onclick="copyToClipboard('results-link')" 
+                                    style="padding: 0.75rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                Копировать
+                            </button>
+                            <button onclick="openLink('results-link')" 
+                                    style="padding: 0.75rem 1rem; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                                Открыть
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                <h4>Тело запроса:</h4>
-                <div class="code-block">{
-    "event_id": "conference2024",
-    "user_id": "user123", 
-    "manager_name": "John"
-}</div>
-
-                <h4>Ответы:</h4>
-                <div class="code-block">// Успешная регистрация
-{
-    "message": "ok"
-}
-
-// Повторная регистрация
-{
-    "message": "duplicate key value violates unique constraint"
-}
-
-// Ошибка валидации
-{
-    "message": "incorrect params"
-}</div>
-
-                <div class="api-endpoint">
-                    <span class="method get">GET</span>
-                    <strong>/results?event_id=conference2024</strong>
-                    <p>Возвращает HTML-страницу с результатами регистрации</p>
-                </div>
-
-                <div class="api-endpoint">
-                    <span class="method get">GET</span>
-                    <strong>/static/</strong>
-                    <p>Обслуживает статические файлы (CSS, JS, HTML)</p>
-                </div>
-
-                <div class="api-endpoint">
-                    <span class="method get">GET</span>
-                    <strong>/</strong>
-                    <p>Главная страница приложения</p>
-                </div>
-            </section>
-
-            <section id="database" class="section">
-                <h2>🗄️ База данных</h2>
-
-                <p>Система использует SQLite базу данных, которая автоматически создается при первом запуске.</p>
-
-                <h3>Структура таблицы friends_scanner</h3>
-                <div class="code-block">CREATE TABLE friends_scanner (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    event_id TEXT NOT NULL,
-    user_id TEXT NOT NULL,
-    manager_name TEXT,
-    add_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(event_id, user_id)
-);</div>
-
-                <div class="table-container">
-                    <table class="params-table">
-                        <thead>
-                            <tr>
-                                <th>Поле</th>
-                                <th>Тип</th>
-                                <th>Описание</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>id</td>
-                                <td>INTEGER</td>
-                                <td>Автоинкрементный первичный ключ</td>
-                            </tr>
-                            <tr>
-                                <td>event_id</td>
-                                <td>TEXT</td>
-                                <td>Идентификатор события</td>
-                            </tr>
-                            <tr>
-                                <td>user_id</td>
-                                <td>TEXT</td>
-                                <td>Идентификатор пользователя</td>
-                            </tr>
-                            <tr>
-                                <td>manager_name</td>
-                                <td>TEXT</td>
-                                <td>Имя менеджера (опционально)</td>
-                            </tr>
-                            <tr>
-                                <td>add_time</td>
-                                <td>DATETIME</td>
-                                <td>Время регистрации</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="info">
-                    <h4>🔑 Уникальное ограничение</h4>
-                    <p>Комбинация (event_id, user_id) должна быть уникальной, что предотвращает повторную регистрацию.</p>
-                </div>
-            </section>
-
-            <section id="security" class="section">
-                <h2>🔐 Безопасность</h2>
-
-                <h3>Secure режим</h3>
-                <p>В secure режиме система проверяет подлинность QR-кодов через MD5 хеширование:</p>
-
-                <ol>
-                    <li>QR-код содержит URL вида: <span class="inline-code">/XX/user_id</span></li>
-                    <li>Система вычисляет: <span class="inline-code">MD5(user_id + salt)</span></li>
-                    <li>Берет первые 2 символа хеша и сравнивает с XX</li>
-                    <li>Если совпадает - регистрирует пользователя, иначе - отклоняет</li>
-                </ol>
-
-                <h3>Рекомендации по безопасности</h3>
-                <ul>
-                    <li>Используйте сложную соль (salt) в продакшене</li>
-                    <li>Настройте HTTPS для защиты данных</li>
-                    <li>Ограничьте доступ к странице результатов</li>
-                    <li>Регулярно делайте резервные копии базы данных</li>
-                </ul>
-
-                <div class="warning">
-                    <h4>⚠️ Внимание</h4>
-                    <p>MD5 считается устаревшим алгоритмом хеширования. Для критически важных приложений рассмотрите использование SHA-256 или более современных алгоритмов.</p>
-                </div>
-            </section>
-
-            <section id="troubleshooting" class="section">
-                <h2>🔧 Решение проблем</h2>
-
-                <h3>Камера не работает</h3>
-                <ul>
-                    <li>Убедитесь, что браузер имеет доступ к камере</li>
-                    <li>Проверьте, что сайт использует HTTPS (требуется для доступа к камере)</li>
-                    <li>Попробуйте обновить страницу или перезапустить браузер</li>
-                </ul>
-
-                <h3>QR-код не распознается</h3>
-                <ul>
-                    <li>Убедитесь, что QR-код четкий и хорошо освещен</li>
-                    <li>Проверьте формат URL в QR-коде</li>
-                    <li>В secure режиме проверьте правильность соли</li>
-                </ul>
-
-                <h3>Ошибка "duplicate key"</h3>
-                <p>Пользователь уже зарегистрирован на данном событии. Это нормальное поведение системы.</p>
-
-                <h3>Сервер не запускается</h3>
-                <ul>
-                    <li>Проверьте, что порт не занят другим приложением</li>
-                    <li>Убедитесь, что установлен Go нужной версии</li>
-                    <li>Проверьте права доступа к файлам проекта</li>
-                </ul>
-
-                <div class="info">
-                    <h4>📞 Поддержка</h4>
-                    <p>При возникновении проблем проверьте логи сервера в консоли. Большинство ошибок содержат подробную информацию для диагностики.</p>
-                </div>
+                <script>
+                    // Получаем текущий URL
+                    const currentOrigin = window.location.origin;
+                    
+                    function initializeExamples() {
+                        // Заполняем примеры в документации
+                        document.getElementById('scanner-format-example').textContent = 
+                            currentOrigin + '/?event_id=ID_СОБЫТИЯ&manager_name=ИМЯ_МЕНЕДЖЕРА';
+                        
+                        document.getElementById('scanner-examples').textContent = 
+                            '# Минимальная ссылка (только event_id)\n' +
+                            currentOrigin + '/?event_id=conference2024\n\n' +
+                            '# Полная ссылка с менеджером\n' +
+                            currentOrigin + '/?event_id=conference2024&manager_name=Иван';
+                        
+                        document.getElementById('results-format-example').textContent = 
+                            currentOrigin + '/results?event_id=ID_СОБЫТИЯ';
+                        
+                        document.getElementById('results-example').textContent = 
+                            currentOrigin + '/results?event_id=conference2024';
+                    }
+                    
+                    function updateLinks() {
+                        const eventId = document.getElementById('event-id').value.trim();
+                        const managerName = document.getElementById('manager-name').value.trim();
+                        
+                        if (!eventId) {
+                            document.getElementById('scanner-link').value = 'Введите Event ID';
+                            document.getElementById('results-link').value = 'Введите Event ID';
+                            return;
+                        }
+                        
+                        // Всегда используем текущий домен
+                        const urlBase = currentOrigin;
+                        
+                        // Формирование ссылки на сканнер
+                        let scannerUrl = urlBase + '/?event_id=' + encodeURIComponent(eventId);
+                        if (managerName) {
+                            scannerUrl += '&manager_name=' + encodeURIComponent(managerName);
+                        }
+                        
+                        // Формирование ссылки на результаты
+                        const resultsUrl = urlBase + '/results?event_id=' + encodeURIComponent(eventId);
+                        
+                        document.getElementById('scanner-link').value = scannerUrl;
+                        document.getElementById('results-link').value = resultsUrl;
+                    }
+                    
+                    function copyToClipboard(elementId) {
+                        const element = document.getElementById(elementId);
+                        element.select();
+                        element.setSelectionRange(0, 99999);
+                        
+                        try {
+                            document.execCommand('copy');
+                            
+                            // Показываем уведомление
+                            const button = event.target;
+                            const originalText = button.textContent;
+                            button.textContent = 'Скопировано!';
+                            button.style.background = '#059669';
+                            
+                            setTimeout(() => {
+                                button.textContent = originalText;
+                                button.style.background = '#3b82f6'; // Синий цвет для всех кнопок "Копировать"
+                            }, 2000);
+                        } catch (err) {
+                            console.error('Ошибка копирования: ', err);
+                        }
+                    }
+                    
+                    function openLink(elementId) {
+                        const element = document.getElementById(elementId);
+                        const url = element.value.trim();
+                        
+                        if (!url || url.includes('Введите')) {
+                            alert('Сначала заполните все необходимые поля');
+                            return;
+                        }
+                        
+                        // Открываем ссылку в новой вкладке (URL уже содержит полный домен)
+                        window.open(url, '_blank');
+                    }
+                    
+                    // Инициализация при загрузке страницы
+                    document.addEventListener('DOMContentLoaded', function() {
+                        initializeExamples();
+                        
+                        // Обновляем ссылки при изменении полей
+                        document.getElementById('event-id').addEventListener('input', updateLinks);
+                        document.getElementById('manager-name').addEventListener('input', updateLinks);
+                        
+                        // Инициализируем ссылки
+                        updateLinks();
+                    });
+                </script>
             </section>
         </div>
     </div>
