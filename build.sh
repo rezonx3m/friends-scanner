@@ -34,6 +34,43 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+# Функция для создания символических ссылок на статические файлы
+create_static_symlink() {
+    local build_dir="$1"
+    local static_link="$build_dir/static"
+    
+    if [ -d "static" ]; then
+        log_info "Создаем символическую ссылку на статические файлы..."
+        
+        # Удаляем существующую папку/ссылку static в build директории
+        if [ -e "$static_link" ]; then
+            if [ -L "$static_link" ]; then
+                log_info "Удаляем существующую символическую ссылку..."
+                rm "$static_link"
+            elif [ -d "$static_link" ]; then
+                log_info "Удаляем существующую папку static..."
+                rm -rf "$static_link"
+            fi
+        fi
+        
+        # Создаем относительную символическую ссылку
+        # Переходим в build директорию и создаем ссылку на ../static
+        (cd "$build_dir" && ln -s "../static" "static")
+        
+        if [ -L "$static_link" ]; then
+            log_success "Относительная символическая ссылка создана: $static_link -> ../static"
+        else
+            log_error "Не удалось создать символическую ссылку"
+            # Fallback: копируем файлы как раньше
+            log_info "Используем копирование файлов как резервный вариант..."
+            cp -r static "$build_dir/"
+            log_success "Статические файлы скопированы в $build_dir/static/"
+        fi
+    else
+        log_warning "Папка static не найдена"
+    fi
+}
+
 # Проверяем, что Go установлен
 if ! command -v go &> /dev/null; then
     log_error "Go не установлен. Пожалуйста, установите Go и повторите попытку."
@@ -118,12 +155,8 @@ if [ -f "$OUTPUT_PATH" ]; then
     log_success "Сборка завершена успешно!"
     log_success "Файл: $OUTPUT_PATH (размер: $FILE_SIZE)"
     
-    # Копируем статические файлы в папку сборки
-    if [ -d "static" ]; then
-        log_info "Копируем статические файлы..."
-        cp -r static "$BUILD_DIR/"
-        log_success "Статические файлы скопированы в $BUILD_DIR/static/"
-    fi
+    # Создаем символические ссылки на статические файлы
+    create_static_symlink "$BUILD_DIR"
     
     echo ""
     log_info "Для запуска используйте:"

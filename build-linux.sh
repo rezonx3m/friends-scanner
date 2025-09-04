@@ -24,6 +24,47 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
+log_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+# Функция для создания символических ссылок на статические файлы
+create_static_symlink() {
+    local build_dir="$1"
+    local static_link="$build_dir/static"
+    
+    if [ -d "static" ]; then
+        log_info "Создаем символическую ссылку на статические файлы..."
+        
+        # Удаляем существующую папку/ссылку static в build директории
+        if [ -e "$static_link" ]; then
+            if [ -L "$static_link" ]; then
+                log_info "Удаляем существующую символическую ссылку..."
+                rm "$static_link"
+            elif [ -d "$static_link" ]; then
+                log_info "Удаляем существующую папку static..."
+                rm -rf "$static_link"
+            fi
+        fi
+        
+        # Создаем относительную символическую ссылку
+        # Переходим в build директорию и создаем ссылку на ../static
+        (cd "$build_dir" && ln -s "../static" "static")
+        
+        if [ -L "$static_link" ]; then
+            log_success "Относительная символическая ссылка создана: $static_link -> ../static"
+        else
+            log_error "Не удалось создать символическую ссылку"
+            # Fallback: копируем файлы как раньше
+            log_info "Используем копирование файлов как резервный вариант..."
+            cp -r static "$build_dir/"
+            log_success "Статические файлы скопированы в $build_dir/static/"
+        fi
+    else
+        log_warning "Папка static не найдена"
+    fi
+}
+
 # Проверяем, что мы на Linux
 if [[ "$OSTYPE" != "linux-gnu"* ]]; then
     log_error "Этот скрипт предназначен для запуска на Linux/Ubuntu"
@@ -63,11 +104,8 @@ go vet ./...
 log_info "Собираем бинарный файл..."
 CGO_ENABLED=1 go build -ldflags="-s -w" -o "$BUILD_DIR/friends-scanner" .
 
-# Копируем статические файлы
-if [ -d "static" ]; then
-    log_info "Копируем статические файлы..."
-    cp -r static "$BUILD_DIR/"
-fi
+# Создаем символические ссылки на статические файлы
+create_static_symlink "$BUILD_DIR"
 
 # Проверяем результат
 if [ -f "$BUILD_DIR/friends-scanner" ]; then
