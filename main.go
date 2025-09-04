@@ -30,10 +30,16 @@ type ScannerResult struct {
 	ManagerName string `json:"manager_name"`
 }
 
+type ManagerStats struct {
+	Name  string
+	Count int
+}
+
 type ResultsPageData struct {
-	EventID    string
-	Results    []ScannerResult
-	TotalCount int
+	EventID       string
+	Results       []ScannerResult
+	TotalCount    int
+	ManagerStats  []ManagerStats
 }
 
 var db *sql.DB
@@ -275,6 +281,47 @@ func resultsHandler(w http.ResponseWriter, r *http.Request) {
 				font-size: 1.25rem;
 				margin-bottom: 0.5rem;
 			}
+			.manager-stats-container {
+				margin-bottom: 2rem;
+			}
+			.manager-stats-title {
+				color: #4c51bf;
+				font-size: 1.5rem;
+				font-weight: 600;
+				margin-bottom: 1rem;
+				text-align: center;
+			}
+			.manager-stats-table {
+				width: 100%;
+				border-collapse: collapse;
+			}
+			.manager-stats-table th {
+				background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+				color: #fff;
+				padding: 1rem;
+				text-align: left;
+				font-weight: 600;
+				font-size: 0.875rem;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+			}
+			.manager-stats-table td {
+				padding: 0.875rem 1rem;
+				border-bottom: 1px solid #e5e7eb;
+				font-size: 0.875rem;
+				color: #374151;
+			}
+			.manager-stats-table tr:hover {
+				background: rgba(16, 185, 129, 0.05);
+			}
+			.manager-stats-table tr:last-child td {
+				border-bottom: none;
+			}
+			.manager-count {
+				font-weight: 600;
+				color: #059669;
+				text-align: center;
+			}
 			@media (max-width: 768px) {
 				body { padding: 1rem 0.5rem; }
 				.header { padding: 1.5rem; }
@@ -282,6 +329,9 @@ func resultsHandler(w http.ResponseWriter, r *http.Request) {
 				.header p { font-size: 1rem; }
 				.results-table th,
 				.results-table td { padding: 0.75rem 0.5rem; font-size: 0.75rem; }
+				.manager-stats-table th,
+				.manager-stats-table td { padding: 0.75rem 0.5rem; font-size: 0.75rem; }
+				.manager-stats-title { font-size: 1.25rem; }
 				.stat-card { padding: 1rem; }
 				.stat-number { font-size: 1.5rem; }
 			}
@@ -300,6 +350,30 @@ func resultsHandler(w http.ResponseWriter, r *http.Request) {
 					<div class="stat-label">Всего регистраций</div>
 				</div>
 			</div>
+
+			{{if .ManagerStats}}
+			<div class="manager-stats-container">
+				<h2 class="manager-stats-title">Статистика по менеджерам</h2>
+				<div class="table-container">
+					<table class="manager-stats-table">
+						<thead>
+							<tr>
+								<th>Менеджер</th>
+								<th>Количество</th>
+							</tr>
+						</thead>
+						<tbody>
+							{{range .ManagerStats}}
+							<tr>
+								<td class="manager-name">{{.Name}}</td>
+								<td class="manager-count">{{.Count}}</td>
+							</tr>
+							{{end}}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			{{end}}
 
 			<div class="table-container">
 				{{if .Results}}
@@ -338,11 +412,31 @@ func resultsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Подсчитываем статистику по менеджерам
+	managerCounts := make(map[string]int)
+	for _, result := range results {
+		managerName := result.ManagerName
+		if managerName == "" {
+			managerName = "Без менеджера"
+		}
+		managerCounts[managerName]++
+	}
+
+	// Преобразуем в слайс для шаблона
+	var managerStats []ManagerStats
+	for name, count := range managerCounts {
+		managerStats = append(managerStats, ManagerStats{
+			Name:  name,
+			Count: count,
+		})
+	}
+
 	// Подготавливаем данные для шаблона
 	pageData := ResultsPageData{
-		EventID:    eventID,
-		Results:    results,
-		TotalCount: len(results),
+		EventID:      eventID,
+		Results:      results,
+		TotalCount:   len(results),
+		ManagerStats: managerStats,
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -373,6 +467,11 @@ func staticHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, filePath)
 }
 
+func docHandler(w http.ResponseWriter, r *http.Request) {
+	// Обслуживание документации - отдаем doc.html
+	http.ServeFile(w, r, "./static/doc.html")
+}
+
 func rootHandler(w http.ResponseWriter, r *http.Request) {
 	// Обслуживание корневого пути - отдаем index.html
 	http.ServeFile(w, r, "./static/index.html")
@@ -397,6 +496,7 @@ func main() {
 	// Маршруты
 	http.HandleFunc("/scan", scanHandler)
 	http.HandleFunc("/results", resultsHandler)
+	http.HandleFunc("/doc", docHandler)
 	http.HandleFunc("/static/", staticHandler)
 	http.HandleFunc("/", rootHandler)
 
