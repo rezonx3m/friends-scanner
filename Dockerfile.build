@@ -1,5 +1,5 @@
 # Dockerfile только для сборки Linux бинарника
-FROM --platform=linux/amd64 golang:1.21-bullseye AS builder
+FROM --platform=linux/amd64 golang:1.23-bullseye AS builder
 
 # Устанавливаем необходимые пакеты для сборки
 RUN apt-get update && apt-get install -y \

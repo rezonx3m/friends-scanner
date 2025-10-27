@@ -1,5 +1,5 @@
 # Многоэтапная сборка для оптимального размера образа
-FROM golang:1.21-bullseye AS builder
+FROM golang:1.23-bullseye AS builder
 
 # Устанавливаем необходимые пакеты для сборки
 RUN apt-get update && apt-get install -y \

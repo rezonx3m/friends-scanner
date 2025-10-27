@@ -117,6 +117,8 @@ yesBtn.addEventListener("click", () => {
             showPopupOneButton("Пользователь успешно зарегистрирован", "Продолжить сканирование");
         } else if (data.message.includes("duplicate")) {
             showPopupOneButton("<p style='color: #ef8080;'>Ошибка!</p>Повторная регистрация пользователя!", "Продолжить сканирование", true);
+        } else if (data.message === "event not found") {
+            showPopupOneButton("<p style='color: #ef8080;'>Ошибка!</p>Ивент не найден. Сначала создайте ивент в /doc", "Продолжить сканирование", true);
         } else {
             showPopupOneButton("Техническая ошибка при добавлении: " + data.message, "Продолжить сканирование", true);
             console.log(data);

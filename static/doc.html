@@ -307,10 +307,49 @@
             <nav class="nav">
                 <h3>📋 Содержание</h3>
                 <ul>
+                    <li><a href="#create-event">Создание ивента</a></li>
                     <li><a href="#usage">Как пользоваться</a></li>
                     <li><a href="#configurator">Конфигуратор ссылок</a></li>
                 </ul>
             </nav>
+
+            <section id="create-event" class="section">
+                <h2>🎯 Создание ивента</h2>
+                
+                <div class="warning">
+                    <h4>⚠️ Важно!</h4>
+                    <p>Перед началом работы необходимо создать ивент и задать пароль для доступа к статистике.</p>
+                </div>
+
+                <h3>Зачем нужно создавать ивент?</h3>
+                <p>Создание ивента - это обязательный первый шаг перед началом регистрации участников. При создании ивента вы:</p>
+                <ul>
+                    <li>Задаете уникальный идентификатор события (event_id)</li>
+                    <li>Устанавливаете пароль для защищенного доступа к результатам</li>
+                    <li>Обеспечиваете безопасность данных вашего мероприятия</li>
+                </ul>
+
+                <h3>Как создать ивент?</h3>
+                <p>Используйте <a href="#configurator">конфигуратор ссылок</a> ниже на этой странице. В разделе "Создание нового ивента" заполните:</p>
+                <ol>
+                    <li><strong>Event ID</strong> - уникальный идентификатор вашего события (например: conference2024, meetup-moscow)</li>
+                    <li><strong>Пароль</strong> - пароль для доступа к статистике и результатам</li>
+                    <li>Нажмите кнопку "Создать ивент"</li>
+                </ol>
+
+                <div class="info">
+                    <h4>💡 Совет</h4>
+                    <p>Сохраните пароль в надежном месте! Он понадобится для просмотра результатов и статистики.</p>
+                </div>
+
+                <h3>Что происходит после создания?</h3>
+                <p>После успешного создания ивента:</p>
+                <ul>
+                    <li>Система автоматически сгенерирует ссылки для сканирования и просмотра результатов</li>
+                    <li>Вы сможете начать регистрацию участников через QR-сканер</li>
+                    <li>Доступ к результатам будет защищен паролем</li>
+                </ul>
+            </section>
 
             <section id="usage" class="section">
                 <h2>🚀 Как пользоваться</h2>
@@ -358,14 +397,72 @@
                 <p>Для просмотра результатов регистрации используйте:</p>
                 <div class="code-block" id="results-format-example"></div>
 
+                <div class="warning">
+                    <h4>🔒 Защита паролем</h4>
+                    <p>Для доступа к результатам необходимо указать пароль, который был задан при создании ивента.</p>
+                </div>
+
+                <div class="table-container">
+                    <table class="params-table">
+                        <thead>
+                            <tr>
+                                <th>Параметр</th>
+                                <th>Описание</th>
+                                <th>Обязательный</th>
+                                <th>Пример</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="inline-code">event_id</span></td>
+                                <td>Идентификатор события</td>
+                                <td>Да</td>
+                                <td>conference2024</td>
+                            </tr>
+                            <tr>
+                                <td><span class="inline-code">password</span></td>
+                                <td>Пароль для доступа к результатам</td>
+                                <td>Да</td>
+                                <td>mySecretPass123</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
                 <h4>Пример:</h4>
                 <div class="code-block" id="results-example"></div>
 
             </section>
 
             <section id="configurator" class="section">
-                <h2>🔧 Конфигуратор ссылок</h2>
-                <p>Используйте форму ниже для генерации ссылок на сканнер и результаты:</p>
+                <h2>🔧 Конфигуратор </h2>
+                <p>Используйте форму ниже для создания ивентов и генерации ссылок:</p>
+
+                <!-- Форма создания ивента -->
+                <div style="background: linear-gradient(135deg, #fef3cd 0%, #fde68a 100%); border: 2px solid #fbbf24; border-radius: 12px; padding: 2rem; margin: 1.5rem 0;">
+                    <h3 style="margin-top: 0; color: #92400e;">🎯 Создание нового ивента</h3>
+                    <p style="color: #92400e; margin-bottom: 1.5rem;">Сначала создайте ивент, чтобы начать регистрацию участников</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label for="new-event-id" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #92400e;">Event ID (обязательно):</label>
+                        <input type="text" id="new-event-id" placeholder="conference2024" 
+                               style="width: 100%; padding: 0.75rem; border: 2px solid #d97706; border-radius: 8px; font-family: monospace;">
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="new-event-password" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #92400e;">Пароль для доступа к результатам (обязательно):</label>
+                        <input type="password" id="new-event-password" placeholder="Введите надежный пароль" 
+                               style="width: 100%; padding: 0.75rem; border: 2px solid #d97706; border-radius: 8px; font-family: monospace;">
+                        <small style="color: #92400e; display: block; margin-top: 0.25rem;">💡 Сохраните пароль - он понадобится для просмотра статистики</small>
+                    </div>
+
+                    <button onclick="createNewEvent()" 
+                            style="width: 100%; padding: 1rem; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);">
+                        ✨ Создать ивент
+                    </button>
+                    
+                    <div id="create-event-message" style="margin-top: 1rem; padding: 0.75rem; border-radius: 8px; display: none;"></div>
+                </div>
 
                 <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 2rem; margin: 1.5rem 0;">
                     <h3 style="margin-top: 0; color: #4c51bf;">Настройки</h3>
@@ -376,10 +473,17 @@
                                style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-family: monospace;">
                     </div>
 
-                    <div style="margin-bottom: 1.5rem;">
+                    <div style="margin-bottom: 1rem;">
                         <label for="manager-name" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Имя менеджера (опционально):</label>
                         <input type="text" id="manager-name" placeholder="Иван" 
                                style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-family: monospace;">
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label for="event-password" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Пароль для доступа к результатам (обязательно):</label>
+                        <input type="password" id="event-password" placeholder="Введите пароль от ивента" 
+                               style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-family: monospace;">
+                        <small style="color: #6b7280; display: block; margin-top: 0.25rem;">🔒 Пароль, который вы указали при создании ивента</small>
                     </div>
 
                     <h3 style="color: #4c51bf;">Сгенерированные ссылки</h3>
@@ -433,15 +537,76 @@
                             currentOrigin + '/?event_id=conference2024&manager_name=Иван';
                         
                         document.getElementById('results-format-example').textContent = 
-                            currentOrigin + '/results?event_id=ID_СОБЫТИЯ';
+                            currentOrigin + '/results?event_id=ID_СОБЫТИЯ&password=ПАРОЛЬ';
                         
                         document.getElementById('results-example').textContent = 
-                            currentOrigin + '/results?event_id=conference2024';
+                            currentOrigin + '/results?event_id=conference2024&password=mySecretPass123';
+                    }
+
+                    // Функция создания ивента
+                    async function createNewEvent() {
+                        const eventId = document.getElementById('new-event-id').value.trim();
+                        const password = document.getElementById('new-event-password').value.trim();
+                        const messageDiv = document.getElementById('create-event-message');
+                        
+                        if (!eventId || !password) {
+                            messageDiv.style.display = 'block';
+                            messageDiv.style.background = '#fee2e2';
+                            messageDiv.style.color = '#991b1b';
+                            messageDiv.style.border = '1px solid #dc2626';
+                            messageDiv.textContent = '❌ Заполните все поля!';
+                            return;
+                        }
+
+                        try {
+                            const response = await fetch('/create-event', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    event_id: eventId,
+                                    password: password
+                                })
+                            });
+
+                            const data = await response.json();
+
+                            if (data.message) {
+                                messageDiv.style.display = 'block';
+                                messageDiv.style.background = '#d1fae5';
+                                messageDiv.style.color = '#065f46';
+                                messageDiv.style.border = '1px solid #10b981';
+                                messageDiv.innerHTML = '✅ ' + data.message + '<br><br>Теперь заполните поля ниже для генерации ссылок.';
+                                
+                                // Автоматически заполняем поля для генерации ссылок
+                                document.getElementById('event-id').value = eventId;
+                                document.getElementById('event-password').value = password;
+                                updateLinks();
+                                
+                                // Очищаем форму создания
+                                document.getElementById('new-event-id').value = '';
+                                document.getElementById('new-event-password').value = '';
+                            } else if (data.error) {
+                                messageDiv.style.display = 'block';
+                                messageDiv.style.background = '#fee2e2';
+                                messageDiv.style.color = '#991b1b';
+                                messageDiv.style.border = '1px solid #dc2626';
+                                messageDiv.textContent = '❌ ' + data.error;
+                            }
+                        } catch (error) {
+                            messageDiv.style.display = 'block';
+                            messageDiv.style.background = '#fee2e2';
+                            messageDiv.style.color = '#991b1b';
+                            messageDiv.style.border = '1px solid #dc2626';
+                            messageDiv.textContent = '❌ Ошибка при создании ивента: ' + error.toString();
+                        }
                     }
                     
                     function updateLinks() {
                         const eventId = document.getElementById('event-id').value.trim();
                         const managerName = document.getElementById('manager-name').value.trim();
+                        const password = document.getElementById('event-password').value.trim();
                         
                         if (!eventId) {
                             document.getElementById('scanner-link').value = 'Введите Event ID';
@@ -459,7 +624,12 @@
                         }
                         
                         // Формирование ссылки на результаты
-                        const resultsUrl = urlBase + '/results?event_id=' + encodeURIComponent(eventId);
+                        let resultsUrl = urlBase + '/results?event_id=' + encodeURIComponent(eventId);
+                        if (password) {
+                            resultsUrl += '&password=' + encodeURIComponent(password);
+                        } else {
+                            resultsUrl = 'Введите пароль для генерации ссылки';
+                        }
                         
                         document.getElementById('scanner-link').value = scannerUrl;
                         document.getElementById('results-link').value = resultsUrl;
@@ -508,6 +678,7 @@
                         // Обновляем ссылки при изменении полей
                         document.getElementById('event-id').addEventListener('input', updateLinks);
                         document.getElementById('manager-name').addEventListener('input', updateLinks);
+                        document.getElementById('event-password').addEventListener('input', updateLinks);
                         
                         // Инициализируем ссылки
                         updateLinks();
