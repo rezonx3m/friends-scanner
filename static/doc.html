@@ -143,6 +143,7 @@
             font-family: 'Monaco', 'Menlo', monospace;
             font-size: 0.875rem;
             line-height: 1.5;
+            white-space: pre-wrap;
         }
 
         .inline-code {
@@ -534,7 +535,7 @@
                             '# Минимальная ссылка (только event_id)\n' +
                             currentOrigin + '/?event_id=conference2024\n\n' +
                             '# Полная ссылка с менеджером\n' +
-                            currentOrigin + '/?event_id=conference2024&manager_name=Иван';
+                            currentOrigin + '/?event_id=conference2024&manager_name=Иван\n\n';
                         
                         document.getElementById('results-format-example').textContent = 
                             currentOrigin + '/results?event_id=ID_СОБЫТИЯ&password=ПАРОЛЬ';
