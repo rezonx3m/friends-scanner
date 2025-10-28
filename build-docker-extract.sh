@@ -45,9 +45,26 @@ log_info "Собираем Linux бинарники в Docker..."
 # Удаляем старый контейнер если существует
 docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
 
+# Определяем текущую архитектуру
+ARCH=$(uname -m)
+
 # Собираем образ для сборки и извлекаем артефакты
 log_info "Создаем Docker образ для сборки..."
-docker build -f Dockerfile.build --target builder -t "$BUILD_IMAGE" .
+
+# Показываем предупреждение об эмуляции только на ARM64
+if [[ "$ARCH" == "arm64" || "$ARCH" == "aarch64" ]]; then
+    log_warning "Обнаружена архитектура ARM64 (Apple Silicon)"
+    log_warning "Используется эмуляция x86_64, это может занять время при первой сборке"
+    log_info "Последующие сборки будут быстрее благодаря кэшированию слоев"
+fi
+
+# Используем BuildKit для ускорения сборки с кэшированием
+DOCKER_BUILDKIT=1 docker build \
+    -f Dockerfile.build \
+    --target builder \
+    --progress=plain \
+    -t "$BUILD_IMAGE" \
+    .
 
 if [ $? -ne 0 ]; then
     log_error "Ошибка сборки Docker образа!"
@@ -62,10 +79,12 @@ docker create --name "$CONTAINER_NAME" "$BUILD_IMAGE"
 log_info "Извлекаем собранный бинарник..."
 docker cp "$CONTAINER_NAME:/app/friends-scanner-linux" "$LINUX_BUILD_DIR/" 2>/dev/null || log_error "Не удалось извлечь бинарник"
 
-# Копируем статические файлы
-if [ -d "static" ]; then
-    log_info "Копируем статические файлы..."
-    cp -r static "$LINUX_BUILD_DIR/"
+# Проверяем статические файлы (симлинк уже должен существовать)
+if [ -L "$LINUX_BUILD_DIR/static" ]; then
+    log_info "Симлинк на статические файлы уже существует"
+elif [ -d "static" ]; then
+    log_info "Создаем симлинк на статические файлы..."
+    ln -s ../static "$LINUX_BUILD_DIR/static"
 fi
 
 # Создаем простой запускающий скрипт

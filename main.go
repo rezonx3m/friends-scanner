@@ -503,6 +503,11 @@ func resetWinnersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func resultsHandler(w http.ResponseWriter, r *http.Request) {
+	// Отключаем кеширование для HTML страницы с результатами
+	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	w.Header().Set("Pragma", "no-cache")
+	w.Header().Set("Expires", "0")
+
 	eventID := r.URL.Query().Get("event_id")
 	password := r.URL.Query().Get("password")
 
@@ -666,15 +671,32 @@ func staticHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Отключаем кеширование для HTML файлов
+	if strings.HasSuffix(path, ".html") {
+		w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+		w.Header().Set("Pragma", "no-cache")
+		w.Header().Set("Expires", "0")
+	}
+
 	http.ServeFile(w, r, filePath)
 }
 
 func docHandler(w http.ResponseWriter, r *http.Request) {
+	// Отключаем кеширование для страницы документации
+	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	w.Header().Set("Pragma", "no-cache")
+	w.Header().Set("Expires", "0")
+
 	// Обслуживание документации - отдаем doc.html
 	http.ServeFile(w, r, "./static/doc.html")
 }
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
+	// Отключаем кеширование для главной страницы
+	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	w.Header().Set("Pragma", "no-cache")
+	w.Header().Set("Expires", "0")
+
 	// Обслуживание корневого пути - отдаем index.html
 	http.ServeFile(w, r, "./static/index.html")
 }
