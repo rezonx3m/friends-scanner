@@ -1,7 +1,5 @@
 // Получение параметров из URL
 const urlParams = new URLSearchParams(window.location.search);
-const scannerMode = urlParams.get("mode") || "default";
-const salt = urlParams.get("salt") || "salt";
 const getParamEventId = urlParams.get("event_id") ? urlParams.get("event_id") : "default";
 const getParamManagerName = urlParams.get("manager_name") ? urlParams.get("manager_name") : null;
 
@@ -29,25 +27,12 @@ function setResult(result) {
         console.log(result.data);
 
         let regexp = /\/(user)\/([a-z0-9]+)/g;
-        if (scannerMode === "secure") {
-            regexp = /\/([a-z0-9]{2})\/(.+)/g;
-        }
 
         console.log(regexp);
 
         let res = "";
         for (const match of result.data.matchAll(regexp)) {
             res = match[2];
-            if (scannerMode === "secure") {
-                const hash = CryptoJS.MD5(res + salt);
-                console.log(res + salt);
-                console.log(hash.toString());
-                const hashShort = hash.toString().slice(0, 2);
-                console.log(match);
-                if (hashShort !== match[1]) {
-                    res = "";
-                }
-            }
         }
 
         if (res === "") {
